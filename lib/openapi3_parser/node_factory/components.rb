@@ -22,44 +22,45 @@ module Openapi3Parser
         Node::Components.new(data, context)
       end
 
-      def schemas_factory(context)
-        referenceable_map_factory(context, NodeFactory::Schema)
+      def schemas_factory(input, context)
+        referenceable_map_factory(input, context, NodeFactory::Schema)
       end
 
-      def responses_factory(context)
-        referenceable_map_factory(context, NodeFactory::Response)
+      def responses_factory(input, context)
+        referenceable_map_factory(input, context, NodeFactory::Response)
       end
 
-      def parameters_factory(context)
-        referenceable_map_factory(context, NodeFactory::Parameter)
+      def parameters_factory(input, context)
+        referenceable_map_factory(input, context, NodeFactory::Parameter)
       end
 
-      def examples_factory(context)
-        referenceable_map_factory(context, NodeFactory::Example)
+      def examples_factory(input, context)
+        referenceable_map_factory(input, context, NodeFactory::Example)
       end
 
-      def request_bodies_factory(context)
-        referenceable_map_factory(context, NodeFactory::RequestBody)
+      def request_bodies_factory(input, context)
+        referenceable_map_factory(input, context, NodeFactory::RequestBody)
       end
 
-      def headers_factory(context)
-        referenceable_map_factory(context, NodeFactory::Header)
+      def headers_factory(input, context)
+        referenceable_map_factory(input, context, NodeFactory::Header)
       end
 
-      def security_schemes_factory(context)
-        referenceable_map_factory(context, NodeFactory::SecurityScheme)
+      def security_schemes_factory(input, context)
+        referenceable_map_factory(input, context, NodeFactory::SecurityScheme)
       end
 
-      def links_factory(context)
-        referenceable_map_factory(context, NodeFactory::Link)
+      def links_factory(input, context)
+        referenceable_map_factory(input, context, NodeFactory::Link)
       end
 
-      def callbacks_factory(context)
-        referenceable_map_factory(context, NodeFactory::Callback)
+      def callbacks_factory(input, context)
+        referenceable_map_factory(input, context, NodeFactory::Callback)
       end
 
-      def referenceable_map_factory(context, factory)
+      def referenceable_map_factory(input, context, factory)
         NodeFactory::Map.new(
+          input,
           context,
           value_factory: NodeFactory::OptionalReference.new(factory),
           validate: Validation::InputValidator.new(Validators::ComponentKeys)

@@ -16,27 +16,24 @@ module Openapi3Parser
                      :allowed_default?,
                      :validations
 
-      attr_reader :context, :data
+      attr_reader :raw_input, :context, :data
 
       def self.object_type
         to_s
       end
 
-      def initialize(context)
+      def initialize(input, context)
+        @raw_input = input
         @context = context
-        @data = build_data(context.input)
+        @data = build_data(input)
       end
 
       def resolved_input
         @resolved_input ||= build_resolved_input
       end
 
-      def raw_input
-        context.input
-      end
-
       def nil_input?
-        context.input.nil?
+        raw_input.nil?
       end
 
       def valid?
@@ -86,7 +83,9 @@ module Openapi3Parser
           memo[field] = nil unless memo[field]
           next unless config.factory?
           next_context = Context.next_field(context, field)
-          memo[field] = config.initialize_factory(next_context, self)
+          memo[field] = config.initialize_factory(memo[field],
+                                                  next_context,
+                                                  self)
         end
       end
 

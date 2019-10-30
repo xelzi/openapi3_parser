@@ -175,8 +175,8 @@ module Openapi3Parser
     def build
       return if build_in_progress || built
       @build_in_progress = true
-      context = NodeFactory::Context.root(root_source.data, root_source)
-      @factory = NodeFactory::Openapi.new(context)
+      context = NodeFactory::Context.root(root_source)
+      @factory = NodeFactory::Openapi.new(root_source.data, context)
       reference_registry.freeze
       @warnings.freeze
       @build_in_progress = false

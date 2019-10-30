@@ -16,7 +16,7 @@ module Openapi3Parser
         def initialize(factory, building_node)
           @factory = factory
           @building_node = building_node
-          @validatable = Validation::Validatable.new(factory)
+          @validatable = Validation::Validatable.from_factory(factory)
         end
 
         def call
@@ -109,7 +109,8 @@ module Openapi3Parser
             return if factory.raw_input[name].nil?
 
             field_validatable = Validation::Validatable.new(
-              factory,
+              input: factory.raw_input[name],
+              factory: factory,
               context: Context.next_field(factory.context, name)
             )
 

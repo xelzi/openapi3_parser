@@ -68,43 +68,44 @@ module Openapi3Parser
         Node::Schema.new(data, context)
       end
 
-      def required_factory(context)
-        NodeFactory::Array.new(
-          context,
-          default: nil,
-          value_input_type: String
-        )
+      def required_factory(input, context)
+        NodeFactory::Array.new(input,
+                               context,
+                               default: nil,
+                               value_input_type: String)
       end
 
-      def enum_factory(context)
-        NodeFactory::Array.new(context, default: nil)
+      def enum_factory(input, context)
+        NodeFactory::Array.new(input, context, default: nil)
       end
 
-      def disciminator_factory(context)
-        NodeFactory::Discriminator.new(context)
+      def disciminator_factory(input, context)
+        NodeFactory::Discriminator.new(input, context)
       end
 
-      def xml_factory(context)
-        NodeFactory::Xml.new(context)
+      def xml_factory(input, context)
+        NodeFactory::Xml.new(input, context)
       end
 
-      def external_docs_factory(context)
-        NodeFactory::ExternalDocumentation.new(context)
+      def external_docs_factory(input, context)
+        NodeFactory::ExternalDocumentation.new(input, context)
       end
 
-      def properties_factory(context)
+      def properties_factory(input, context)
         NodeFactory::Map.new(
+          input,
           context,
           value_factory: NodeFactory::OptionalReference.new(self.class)
         )
       end
 
-      def referenceable_schema(context)
-        NodeFactory::OptionalReference.new(self.class).call(context)
+      def referenceable_schema(input, context)
+        NodeFactory::OptionalReference.new(self.class).call(input, context)
       end
 
-      def referenceable_schema_array(context)
+      def referenceable_schema_array(input, context)
         NodeFactory::Array.new(
+          input,
           context,
           default: nil,
           value_factory: NodeFactory::OptionalReference.new(self.class)

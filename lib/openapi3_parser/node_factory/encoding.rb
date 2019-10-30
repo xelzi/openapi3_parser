@@ -19,9 +19,9 @@ module Openapi3Parser
         Node::Encoding.new(data, context)
       end
 
-      def headers_factory(context)
+      def headers_factory(input, context)
         factory = NodeFactory::OptionalReference.new(NodeFactory::Header)
-        NodeFactory::Map.new(context, value_factory: factory)
+        NodeFactory::Map.new(input, context, value_factory: factory)
       end
 
       def default_explode

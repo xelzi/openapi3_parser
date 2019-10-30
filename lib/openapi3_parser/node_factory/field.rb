@@ -65,7 +65,7 @@ module Openapi3Parser
 
         def initialize(factory)
           @factory = factory
-          @validatable = Validation::Validatable.new(factory)
+          @validatable = Validation::Validatable.from_factory(factory)
         end
 
         def errors

@@ -22,8 +22,8 @@ module Openapi3Parser
         Node::SecurityScheme.new(data, context)
       end
 
-      def flows_factory(context)
-        NodeFactory::OauthFlows.new(context)
+      def flows_factory(input, context)
+        NodeFactory::OauthFlows.new(input, context)
       end
     end
   end

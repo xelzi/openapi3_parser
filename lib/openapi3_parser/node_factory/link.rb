@@ -25,12 +25,12 @@ module Openapi3Parser
         Node::Link.new(data, context)
       end
 
-      def parameters_factory(context)
-        NodeFactory::Map.new(context)
+      def parameters_factory(input, context)
+        NodeFactory::Map.new(input, context)
       end
 
-      def server_factory(context)
-        NodeFactory::Server.new(context)
+      def server_factory(input, context)
+        NodeFactory::Server.new(input, context)
       end
     end
   end

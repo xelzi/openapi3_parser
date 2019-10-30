@@ -16,12 +16,11 @@ module Openapi3Parser
         Node::RequestBody.new(data, context)
       end
 
-      def content_factory(context)
-        NodeFactory::Map.new(
-          context,
-          value_factory: NodeFactory::MediaType,
-          validate: ContentValidator
-        )
+      def content_factory(input, context)
+        NodeFactory::Map.new(input,
+                             context,
+                             value_factory: NodeFactory::MediaType,
+                             validate: ContentValidator)
       end
 
       class ContentValidator

@@ -16,8 +16,9 @@ module Openapi3Parser
         Node::Server.new(data, context)
       end
 
-      def variables_factory(context)
+      def variables_factory(input, context)
         NodeFactory::Map.new(
+          input,
           context,
           value_factory: NodeFactory::ServerVariable
         )

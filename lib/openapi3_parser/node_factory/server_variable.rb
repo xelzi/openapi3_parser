@@ -12,8 +12,13 @@ module Openapi3Parser
 
       private
 
-      def enum_factory(context)
+      def build_object(data, context)
+        Node::ServerVariable.new(data, context)
+      end
+
+      def enum_factory(input, context)
         NodeFactory::Array.new(
+          input,
           context,
           default: nil,
           value_input_type: String,
@@ -22,10 +27,6 @@ module Openapi3Parser
             validatable.add_error("Expected atleast one value")
           end
         )
-      end
-
-      def build_object(data, context)
-        Node::ServerVariable.new(data, context)
       end
     end
   end

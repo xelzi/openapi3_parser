@@ -9,9 +9,9 @@ module Openapi3Parser
 
       attr_reader :factory
 
-      def initialize(context, factory)
+      def initialize(input, context, factory)
         @factory = factory
-        super(context)
+        super(input, context)
       end
 
       def in_recursive_loop?

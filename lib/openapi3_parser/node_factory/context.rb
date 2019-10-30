@@ -7,18 +7,16 @@ module Openapi3Parser
     # object is referenced so it is limited in data about it's location
     # within the document.
     #
-    # @attr_reader  [Any]                     input
     # @attr_reader  [Source::Location]        source_location
     # @attr_reader  [Array<Source::Location>] refernce_locations
     #
     class Context
       # Create a context for the root of a document
       #
-      # @param  [Any]     input
       # @param  [Source]  source
       # @return [Context]
-      def self.root(input, source)
-        new(input, source_location: Source::Location.new(source, []))
+      def self.root(source)
+        new(source_location: Source::Location.new(source, []))
       end
 
       # Create a factory context for a field within the current contexts data
@@ -31,12 +29,11 @@ module Openapi3Parser
       # @param  [String]  field
       # @return [Context]
       def self.next_field(parent_context, field)
-        pc = parent_context
-        input = pc.input.respond_to?(:[]) ? pc.input[field] : nil
-        source_location = Source::Location.next_field(pc.source_location, field)
-        new(input,
-            source_location: source_location,
-            reference_locations: pc.reference_locations)
+        source_location = Source::Location.next_field(
+          parent_context.source_location, field
+        )
+        new(source_location: source_location,
+            reference_locations: parent_context.reference_locations)
       end
 
       # Creates the context for a field that references another field
@@ -48,29 +45,23 @@ module Openapi3Parser
         reference_locations = [reference_context.source_location] +
                               reference_context.reference_locations
 
-        data = source_location.data if source_location.source_available?
-        new(data,
-            source_location: source_location,
+        new(source_location: source_location,
             reference_locations: reference_locations)
       end
 
-      attr_reader :input, :source_location, :reference_locations
+      attr_reader :source_location, :reference_locations
 
-      # @param  [Any]                     input
       # @param  [Source::Location]        source_location
       # @param  [Array<Source::Location>] reference_locations
-      def initialize(input,
-                     source_location:,
+      def initialize(source_location:,
                      reference_locations: [])
-        @input = input
         @source_location = source_location
         @reference_locations = reference_locations
       end
 
       # @return [Boolean]
       def ==(other)
-        input == other.input &&
-          source_location == other.source_location &&
+        source_location == other.source_location &&
           reference_locations == other.reference_locations
       end
 

@@ -3,18 +3,21 @@
 module Openapi3Parser
   module Validation
     class Validatable
-      attr_reader :context, :errors, :factory
+      attr_reader :context, :errors, :factory, :input
 
       UNDEFINED = Class.new
 
-      def initialize(factory, context: nil)
-        @factory = factory
-        @context = context || factory.context
-        @errors = []
+      def self.from_factory(factory)
+        new(input: factory.raw_input,
+            factory: factory,
+            context: factory.context)
       end
 
-      def input
-        context.input
+      def initialize(input:, factory: nil, context: nil)
+        @input = input
+        @factory = factory
+        @context = context
+        @errors = []
       end
 
       def add_error(error, given_context = nil, factory_class = UNDEFINED)
@@ -24,7 +27,7 @@ module Openapi3Parser
         @errors << Validation::Error.new(
           error,
           given_context || context,
-          factory_class == UNDEFINED ? factory.class : factory_class
+          factory_class == UNDEFINED ? factory&.class : factory_class
         )
       end
 

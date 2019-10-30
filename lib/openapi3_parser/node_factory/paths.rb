@@ -20,10 +20,11 @@ module Openapi3Parser
         \Z
       }x
 
-      def initialize(context)
+      def initialize(input, context)
         factory = NodeFactory::OptionalReference.new(NodeFactory::PathItem)
 
-        super(context,
+        super(input,
+              context,
               allow_extensions: true,
               value_factory: factory,
               validate: :validate)

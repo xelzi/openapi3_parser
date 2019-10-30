@@ -41,19 +41,18 @@ module Openapi3Parser
         Node::PathItem.new(data, context)
       end
 
-      def ref_factory(context)
-        NodeFactory::Fields::Reference.new(context, self.class)
+      def ref_factory(input, context)
+        NodeFactory::Fields::Reference.new(input, context, self.class)
       end
 
-      def operation_factory(context)
-        NodeFactory::Operation.new(context)
+      def operation_factory(input, context)
+        NodeFactory::Operation.new(input, context)
       end
 
-      def servers_factory(context)
-        NodeFactory::Array.new(
-          context,
-          value_factory: NodeFactory::Server
-        )
+      def servers_factory(input, context)
+        NodeFactory::Array.new(input,
+                               context,
+                               value_factory: NodeFactory::Server)
       end
 
       def build_resolved_input
@@ -74,7 +73,7 @@ module Openapi3Parser
         end
       end
 
-      def parameters_factory(context)
+      def parameters_factory(input, context)
         factory = NodeFactory::OptionalReference.new(NodeFactory::Parameter)
 
         validate_parameters = lambda do |validatable|
@@ -85,7 +84,8 @@ module Openapi3Parser
           )
         end
 
-        NodeFactory::Array.new(context,
+        NodeFactory::Array.new(input,
+                               context,
                                value_factory: factory,
                                validate: validate_parameters)
       end

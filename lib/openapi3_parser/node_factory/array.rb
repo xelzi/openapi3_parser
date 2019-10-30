@@ -3,34 +3,34 @@
 module Openapi3Parser
   module NodeFactory
     class Array
-      attr_reader :context, :data, :default, :value_input_type,
+      attr_reader :raw_input, :context, :data, :default, :value_input_type,
                   :value_factory, :validation
 
+      # rubocop:disable Metrics/ParameterLists
       def initialize(
+        input,
         context,
         default: [],
         value_input_type: nil,
         value_factory: nil,
         validate: nil
       )
+        @raw_input = input
         @context = context
         @default = default
         @value_input_type = value_input_type
         @value_factory = value_factory
         @validation = validate
-        @data = build_data(context.input)
+        @data = build_data(input)
       end
-
-      def raw_input
-        context.input
-      end
+      # rubocop:enable Metrics/ParameterLists
 
       def resolved_input
         @resolved_input ||= build_resolved_input
       end
 
       def nil_input?
-        context.input.nil?
+        raw_input.nil?
       end
 
       def valid?
@@ -61,18 +61,18 @@ module Openapi3Parser
       def process_data(data)
         data.each_with_index.map do |value, i|
           if value_factory
-            initialize_value_factory(Context.next_field(context, i))
+            initialize_value_factory(value, Context.next_field(context, i))
           else
             value
           end
         end
       end
 
-      def initialize_value_factory(field_context)
+      def initialize_value_factory(input, field_context)
         if value_factory.is_a?(Class)
-          value_factory.new(field_context)
+          value_factory.new(input, field_context)
         else
-          value_factory.call(field_context)
+          value_factory.call(input, field_context)
         end
       end
 
@@ -99,7 +99,7 @@ module Openapi3Parser
 
         def initialize(factory)
           @factory = factory
-          @validatable = Validation::Validatable.new(factory)
+          @validatable = Validation::Validatable.from_factory(factory)
         end
 
         def errors
@@ -111,19 +111,15 @@ module Openapi3Parser
         end
 
         def data(parent_context)
-          return default_value if factory.nil_input?
+          return default_value(parent_context) if factory.nil_input?
 
-          TypeChecker.raise_on_invalid_type(factory.context, type: ::Array)
+          TypeChecker.raise_on_invalid_type(factory.raw_input,
+                                            factory.context,
+                                            type: ::Array)
           check_values(raise_on_invalid: true)
           validate(raise_on_invalid: true)
 
-          factory.data.each_with_index.map do |value, i|
-            if value.respond_to?(:node)
-              Node::Placeholder.new(value, i, parent_context)
-            else
-              value
-            end
-          end
+          something(parent_context)
         end
 
         private_class_method :new
@@ -141,11 +137,18 @@ module Openapi3Parser
           end
         end
 
-        def default_value
-          if factory.nil_input? && factory.default.nil?
-            nil
-          else
-            factory.data
+        def default_value(parent_context)
+          return if factory.nil_input? && factory.default.nil?
+          something(parent_context)
+        end
+
+        def something(parent_context)
+          factory.data.each_with_index.map do |value, i|
+            if value.respond_to?(:node)
+              Node::Placeholder.new(value, i, parent_context)
+            else
+              value
+            end
           end
         end
 

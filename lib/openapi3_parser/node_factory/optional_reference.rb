@@ -11,13 +11,13 @@ module Openapi3Parser
         "#{self.class}[#{factory.object_type}]}"
       end
 
-      def call(context)
-        reference = context.input.is_a?(Hash) && context.input["$ref"]
+      def call(input, context)
+        reference = input.is_a?(Hash) && context.input["$ref"]
 
         if reference
-          NodeFactory::Reference.new(context, self)
+          NodeFactory::Reference.new(input, context, self)
         else
-          factory.new(context)
+          factory.new(input, context)
         end
       end
 

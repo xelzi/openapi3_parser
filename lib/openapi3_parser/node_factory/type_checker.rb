@@ -7,16 +7,16 @@ module Openapi3Parser
         new(type).validate_type(validatable, context)
       end
 
-      def self.raise_on_invalid_type(context, type:)
-        new(type).raise_on_invalid_type(context)
+      def self.raise_on_invalid_type(input, context, type:)
+        new(type).raise_on_invalid_type(input, context)
       end
 
       def self.validate_keys(validatable, type:, context: nil)
         new(type).validate_keys(validatable, context)
       end
 
-      def self.raise_on_invalid_keys(context, type:)
-        new(type).raise_on_invalid_keys(context)
+      def self.raise_on_invalid_keys(input, context, type:)
+        new(type).raise_on_invalid_keys(input, context)
       end
 
       private_class_method :new
@@ -28,7 +28,7 @@ module Openapi3Parser
       def validate_type(validatable, context)
         return true unless type
         context ||= validatable.context
-        valid_type?(context.input).tap do |valid|
+        valid_type?(validatable.input).tap do |valid|
           next if valid
           validatable.add_error("Invalid type. #{field_error_message}",
                                 context)
@@ -38,22 +38,22 @@ module Openapi3Parser
       def validate_keys(validatable, context)
         return true unless type
         context ||= validatable.context
-        valid_keys?(context.input).tap do |valid|
+        valid_keys?(validatable.input).tap do |valid|
           next if valid
           validatable.add_error("Invalid keys. #{keys_error_message}",
                                 context)
         end
       end
 
-      def raise_on_invalid_type(context)
-        return true if !type || valid_type?(context.input)
+      def raise_on_invalid_type(input, context)
+        return true if !type || valid_type?(input)
         raise Error::InvalidType,
               "Invalid type for #{context.location_summary}: "\
               "#{field_error_message}"
       end
 
-      def raise_on_invalid_keys(context)
-        return true if !type || valid_keys?(context.input)
+      def raise_on_invalid_keys(input, context)
+        return true if !type || valid_keys?(input)
         raise Error::InvalidType,
               "Invalid keys for #{context.location_summary}: "\
               "#{keys_error_message}"

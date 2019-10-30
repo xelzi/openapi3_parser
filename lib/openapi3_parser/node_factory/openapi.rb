@@ -30,19 +30,22 @@ module Openapi3Parser
         Node::Openapi.new(data, context)
       end
 
-      def servers_factory(context)
-        NodeFactory::Array.new(context,
-                               value_factory: NodeFactory::Server)
+      def servers_factory(input, context)
+        NodeFactory::Array.new(input,
+                               context,
+                               value_factory: NodeFactory::Server,
+                               default: [{ "url" => "/" }])
       end
 
-      def security_factory(context)
-        NodeFactory::Array.new(context,
+      def security_factory(input, context)
+        NodeFactory::Array.new(input,
+                               context,
                                value_factory: NodeFactory::SecurityRequirement)
       end
 
-      def tags_factory(context)
+      def tags_factory(input, context)
         validate_unique_tags = lambda do |validatable|
-          names = validatable.factory.context.input.map { |i| i["name"] }
+          names = validatable.factory.raw_input.map { |i| i["name"] }
           return if names.uniq.count == names.count
 
           dupes = names.find_all { |name| names.count(name) > 1 }
@@ -51,7 +54,8 @@ module Openapi3Parser
           )
         end
 
-        NodeFactory::Array.new(context,
+        NodeFactory::Array.new(input,
+                               context,
                                value_factory: NodeFactory::Tag,
                                validate: validate_unique_tags)
       end

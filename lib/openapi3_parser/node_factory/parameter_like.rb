@@ -7,20 +7,22 @@ module Openapi3Parser
         context.input["style"] == "form"
       end
 
-      def schema_factory(context)
+      def schema_factory(input, context)
         factory = NodeFactory::OptionalReference.new(NodeFactory::Schema)
-        factory.call(context)
+        factory.call(input, context)
       end
 
-      def examples_factory(context)
+      def examples_factory(input, context)
         factory = NodeFactory::OptionalReference.new(NodeFactory::Schema)
-        NodeFactory::Map.new(context,
+        NodeFactory::Map.new(input,
+                             context,
                              default: nil,
                              value_factory: factory)
       end
 
-      def content_factory(context)
-        NodeFactory::Map.new(context,
+      def content_factory(input, context)
+        NodeFactory::Map.new(input,
+                             context,
                              default: nil,
                              value_factory: NodeFactory::MediaType,
                              validate: method(:validate_content))

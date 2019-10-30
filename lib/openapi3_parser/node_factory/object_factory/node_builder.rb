@@ -14,7 +14,7 @@ module Openapi3Parser
 
         def initialize(factory)
           @factory = factory
-          @validatable = Validation::Validatable.new(factory)
+          @validatable = Validation::Validatable.from_factory(factory)
         end
 
         def errors
@@ -31,7 +31,9 @@ module Openapi3Parser
 
         def node_data(parent_context)
           return build_node_data(parent_context) if empty_and_allowed_to_be?
-          TypeChecker.raise_on_invalid_type(factory.context, type: ::Hash)
+          TypeChecker.raise_on_invalid_type(factory.raw_input,
+                                            factory.context,
+                                            type: ::Hash)
           validate(raise_on_invalid: true)
           build_node_data(parent_context)
         end

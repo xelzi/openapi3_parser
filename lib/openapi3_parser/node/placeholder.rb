@@ -42,7 +42,8 @@ module Openapi3Parser
 
       def node
         @node ||= begin
-                    node_context = Context.next_field(parent_context,
+                    node_context = Context.next_field(node_factory.raw_input,
+                                                      parent_context,
                                                       field,
                                                       node_factory.context)
                     node_factory.node(node_context)

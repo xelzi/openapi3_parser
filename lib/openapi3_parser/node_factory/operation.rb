@@ -28,11 +28,11 @@ module Openapi3Parser
         Node::Operation.new(data, context)
       end
 
-      def tags_factory(context)
-        NodeFactory::Array.new(context, value_input_type: String)
+      def tags_factory(input, context)
+        NodeFactory::Array.new(input, context, value_input_type: String)
       end
 
-      def parameters_factory(context)
+      def parameters_factory(input, context)
         factory = NodeFactory::OptionalReference.new(NodeFactory::Parameter)
 
         validate_parameters = lambda do |validatable|
@@ -43,33 +43,36 @@ module Openapi3Parser
           )
         end
 
-        NodeFactory::Array.new(context,
+        NodeFactory::Array.new(input,
+                               context,
                                value_factory: factory,
                                validate: validate_parameters)
       end
 
-      def request_body_factory(context)
+      def request_body_factory(input, context)
         factory = NodeFactory::RequestBody
-        NodeFactory::OptionalReference.new(factory).call(context)
+        NodeFactory::OptionalReference.new(factory).call(input, context)
       end
 
-      def callbacks_factory(context)
+      def callbacks_factory(input, context)
         factory = NodeFactory::OptionalReference.new(NodeFactory::Callback)
-        NodeFactory::Map.new(context, value_factory: factory)
+        NodeFactory::Map.new(input, context, value_factory: factory)
       end
 
-      def responses_factory(context)
+      def responses_factory(input, context)
         factory = NodeFactory::RequestBody
-        NodeFactory::OptionalReference.new(factory).call(context)
+        NodeFactory::OptionalReference.new(factory).call(input, context)
       end
 
-      def security_factory(context)
-        NodeFactory::Array.new(context,
+      def security_factory(input, context)
+        NodeFactory::Array.new(input,
+                               context,
                                value_factory: NodeFactory::SecurityRequirement)
       end
 
-      def servers_factory(context)
-        NodeFactory::Array.new(context,
+      def servers_factory(input, context)
+        NodeFactory::Array.new(input,
+                               context,
                                value_factory: NodeFactory::Server)
       end
     end

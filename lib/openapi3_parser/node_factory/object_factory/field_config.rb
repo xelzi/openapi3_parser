@@ -22,13 +22,13 @@ module Openapi3Parser
           !given_factory.nil?
         end
 
-        def initialize_factory(context, parent_factory)
+        def initialize_factory(input, context, parent_factory)
           if given_factory.is_a?(Class)
-            given_factory.new(context)
+            given_factory.new(input, context)
           elsif given_factory.is_a?(Symbol)
-            parent_factory.send(given_factory, context)
+            parent_factory.send(given_factory, input, context)
           else
-            given_factory.call(context)
+            given_factory.call(input, context)
           end
         end
 
@@ -40,7 +40,8 @@ module Openapi3Parser
           return true if !given_input_type || validatable.input.nil?
 
           if building_node
-            TypeChecker.raise_on_invalid_type(validatable.context,
+            TypeChecker.raise_on_invalid_type(validatable.input,
+                                              validatable.context,
                                               type: given_input_type)
           else
             TypeChecker.validate_type(validatable, type: given_input_type)

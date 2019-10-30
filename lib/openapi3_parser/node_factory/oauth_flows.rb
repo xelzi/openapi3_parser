@@ -13,9 +13,9 @@ module Openapi3Parser
 
       private
 
-      def oauth_flow_factory(context)
+      def oauth_flow_factory(input, context)
         NodeFactory::OptionalReference.new(NodeFactory::OauthFlow)
-                                      .call(context)
+                                      .call(input, context)
       end
 
       def build_object(data, context)

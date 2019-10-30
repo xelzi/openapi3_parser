@@ -17,28 +17,30 @@ module Openapi3Parser
     class Context
       # Create a context for the root of a document
       #
+      # @param  [Any]                   input
       # @param  [NodeFactory::Context]  factory_context
       # @return [Node::Context]
-      def self.root(factory_context)
+      def self.root(input, factory_context)
         location = Source::Location.new(factory_context.source, [])
-        new(factory_context.input,
+        new(input,
             document_location: location,
             source_location: factory_context.source_location)
       end
 
       # Create a context for the child of a previous context
       #
+      # @param  [Any]                   input
       # @param  [Node::Context]         parent_context
       # @param  [String]                field
       # @param  [NodeFactory::Context]  factory_context
       # @return [Node::Context]
-      def self.next_field(parent_context, field, factory_context)
+      def self.next_field(input, parent_context, field, factory_context)
         document_location = Source::Location.next_field(
           parent_context.document_location,
           field
         )
 
-        new(factory_context.input,
+        new(input,
             document_location: document_location,
             source_location: factory_context.source_location)
       end
@@ -56,9 +58,9 @@ module Openapi3Parser
 
       attr_reader :input, :document_location, :source_location
 
-      # @param                           input
-      # @param  [Source::Location]       document_location
-      # @param  [Source::Location]       source_location
+      # @param  [Any]               input
+      # @param  [Source::Location]  document_location
+      # @param  [Source::Location]  source_location
       def initialize(input, document_location:, source_location:)
         @input = input
         @document_location = document_location

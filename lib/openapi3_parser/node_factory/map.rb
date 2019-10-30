@@ -3,12 +3,12 @@
 module Openapi3Parser
   module NodeFactory
     class Map
-      attr_reader :allow_extensions, :context, :data, :default,
-                  :value_input_type, :value_factory,
-                  :validation
+      attr_reader :allow_extensions, :context, :data, :default, :raw_input,
+                  :value_input_type, :value_factory, :validation
 
       # rubocop:disable Metrics/ParameterLists
       def initialize(
+        input,
         context,
         allow_extensions: false,
         default: {},
@@ -16,26 +16,23 @@ module Openapi3Parser
         value_factory: nil,
         validate: nil
       )
+        @raw_input = input
         @context = context
         @allow_extensions = allow_extensions
         @default = default
         @value_input_type = value_input_type
         @value_factory = value_factory
         @validation = validate
-        @data = build_data(context.input)
+        @data = build_data(input)
       end
       # rubocop:enable Metrics/ParameterLists
-
-      def raw_input
-        context.input
-      end
 
       def resolved_input
         @resolved_input ||= build_resolved_input
       end
 
       def nil_input?
-        context.input.nil?
+        raw_input.nil?
       end
 
       def valid?
@@ -57,10 +54,10 @@ module Openapi3Parser
 
       private
 
-      def build_data(raw_input)
-        use_default = nil_input? || !raw_input.is_a?(::Hash)
+      def build_data(input)
+        use_default = nil_input? || !input.is_a?(::Hash)
         return if use_default && default.nil?
-        process_data(use_default ? default : raw_input)
+        process_data(use_default ? default : input)
       end
 
       def process_data(data)
@@ -69,16 +66,16 @@ module Openapi3Parser
                         value
                       else
                         next_context = Context.next_field(context, key)
-                        initialize_value_factory(next_context)
+                        initialize_value_factory(value, next_context)
                       end
         end
       end
 
-      def initialize_value_factory(field_context)
+      def initialize_value_factory(input, field_context)
         if value_factory.is_a?(Class)
-          value_factory.new(field_context)
+          value_factory.new(input, field_context)
         else
-          value_factory.call(field_context)
+          value_factory.call(input, field_context)
         end
       end
 
@@ -109,7 +106,7 @@ module Openapi3Parser
 
         def initialize(factory)
           @factory = factory
-          @validatable = Validation::Validatable.new(factory)
+          @validatable = Validation::Validatable.from_factory(factory)
         end
 
         def errors

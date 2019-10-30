@@ -20,24 +20,24 @@ module Openapi3Parser
         Node::MediaType.new(data, context)
       end
 
-      def schema_factory(context)
+      def schema_factory(input, context)
         factory = NodeFactory::Schema
-        NodeFactory::OptionalReference.new(factory).call(context)
+        NodeFactory::OptionalReference.new(factory).call(input, context)
       end
 
-      def examples_factory(context)
+      def examples_factory(input, context)
         factory = NodeFactory::OptionalReference.new(NodeFactory::Example)
-        NodeFactory::Map.new(context,
+        NodeFactory::Map.new(input,
+                             context,
                              default: nil,
                              value_factory: factory)
       end
 
-      def encoding_factory(context)
-        NodeFactory::Map.new(
-          context,
-          validate: EncodingValidator.new(self),
-          value_factory: NodeFactory::Encoding
-        )
+      def encoding_factory(input, context)
+        NodeFactory::Map.new(input,
+                             context,
+                             validate: EncodingValidator.new(self),
+                             value_factory: NodeFactory::Encoding)
       end
 
       class EncodingValidator
