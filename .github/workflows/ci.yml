@@ -1,0 +1,19 @@
+on: [push, pull_request]
+jobs:
+  test:
+    strategy:
+      matrix:
+        ruby: [2.4, 2.5, 2.6, 2.7, ruby-head]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/cache@v1
+        with:
+          path: vendor/bundle
+          key: bundle-${{ matrix.ruby }}-${{ hashFiles('**/*.gemspec') }}
+          restore-keys: bundle-${{ matrix.ruby }}
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+      - run: bundle install --jobs 4 --retry 3
+      - run: bundle exec rake
