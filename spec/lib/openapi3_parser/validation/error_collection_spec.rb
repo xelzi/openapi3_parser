@@ -72,17 +72,20 @@ RSpec.describe Openapi3Parser::Validation::ErrorCollection do
 
     context "when there are errors" do
       let(:errors) { [create_error("Boom")] }
+
       it { is_expected.to be false }
     end
 
     context "when there are not errors" do
       let(:errors) { [] }
+
       it { is_expected.to be true }
     end
   end
 
   describe "#group_errors" do
     subject(:grouped_errors) { described_class.new(errors).group_errors }
+
     let(:errors) { [create_error("Boom")] }
 
     it "returns an array of LocationTypeGroup objects" do
@@ -177,12 +180,14 @@ RSpec.describe Openapi3Parser::Validation::ErrorCollection do
 
     context "when there are no errors" do
       let(:errors) { [] }
+
       it { is_expected.to be_empty }
     end
   end
 
   describe "#to_h" do
     subject(:errors_hash) { described_class.new(errors).to_h }
+
     let(:errors) { [create_error("Boom")] }
 
     it "returns a hash" do
@@ -261,6 +266,7 @@ RSpec.describe Openapi3Parser::Validation::ErrorCollection do
 
     context "when there are no errors" do
       let(:errors) { [] }
+
       it { is_expected.to be_empty }
     end
   end
