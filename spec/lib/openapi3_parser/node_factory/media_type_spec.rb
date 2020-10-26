@@ -1,12 +1,6 @@
 # frozen_string_literal: true
 
-require "support/helpers/context"
-require "support/mutually_exclusive_example"
-require "support/node_object_factory"
-
 RSpec.describe Openapi3Parser::NodeFactory::MediaType do
-  include Helpers::Context
-
   it_behaves_like "node object factory", Openapi3Parser::Node::MediaType do
     let(:input) do
       {
@@ -59,39 +53,22 @@ RSpec.describe Openapi3Parser::NodeFactory::MediaType do
     let(:node_factory_context) do
       create_node_factory_context(input, document_input: document_input)
     end
-
-    let(:node_context) do
-      node_factory_context_to_node_context(node_factory_context)
-    end
   end
 
+  it_behaves_like "mutually exclusive example"
+
   describe "examples default value" do
-    subject(:node) do
-      described_class.new(node_factory_context).node(node_context)
-    end
-
-    let(:node_factory_context) do
-      create_node_factory_context({ "examples" => nil })
-    end
-
-    let(:node_context) do
-      node_factory_context_to_node_context(node_factory_context)
-    end
-
     it "defaults to a value of nil" do
+      factory_context = create_node_factory_context({})
+      node = described_class.new(factory_context).node(
+        node_factory_context_to_node_context(factory_context)
+      )
       expect(node["examples"]).to be_nil
     end
   end
 
-  it_behaves_like "mutually exclusive example" do
-    let(:node_factory_context) do
-      create_node_factory_context({ "example" => example,
-                                    "examples" => examples })
-    end
-  end
-
   describe "encoding" do
-    subject { described_class.new(node_factory_context) }
+    subject(:instance) { described_class.new(node_factory_context) }
 
     let(:node_factory_context) do
       create_node_factory_context({ "schema" => schema,
@@ -127,7 +104,7 @@ RSpec.describe Openapi3Parser::NodeFactory::MediaType do
       end
 
       it do
-        expect(subject)
+        expect(instance)
           .to have_validation_error("#/encoding")
           .with_message(
             "Keys are not defined as schema properties: key_1, key_2"

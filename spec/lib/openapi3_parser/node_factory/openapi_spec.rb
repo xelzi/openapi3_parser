@@ -1,10 +1,6 @@
 # frozen_string_literal: true
 
-require "support/node_object_factory"
-require "support/helpers/context"
-
 RSpec.describe Openapi3Parser::NodeFactory::Openapi do
-  include Helpers::Context
   let(:minimal_openapi_definition) do
     {
       "openapi" => "3.0.0",
@@ -18,59 +14,48 @@ RSpec.describe Openapi3Parser::NodeFactory::Openapi do
 
   it_behaves_like "node object factory", Openapi3Parser::Node::Openapi do
     let(:input) { minimal_openapi_definition }
-    let(:node_factory_context) { create_node_factory_context(input) }
-    let(:node_context) do
-      node_factory_context_to_node_context(node_factory_context)
-    end
   end
 
   context "when input is nil" do
-    subject(:factory) { described_class.new(node_factory_context) }
+    let(:factory_context) { create_node_factory_context(nil) }
 
-    let(:input) { nil }
-    let(:node_factory_context) { create_node_factory_context(input) }
-    let(:node_context) do
-      node_factory_context_to_node_context(node_factory_context)
+    it "is invalid" do
+      instance = described_class.new(factory_context)
+      expect(instance).not_to be_valid
+      expect(instance)
+        .to have_validation_error("#/")
+        .with_message("Invalid type. Expected Object")
     end
 
-    it { is_expected.not_to be_valid }
-
-    it "raises error accessing node" do
-      expect { subject.node(node_context) }
-        .to raise_error(Openapi3Parser::Error)
+    it "raises an error trying to access the node" do
+      instance = described_class.new(factory_context)
+      node_context = node_factory_context_to_node_context(factory_context)
+      expect { instance.node(node_context) }.to raise_error(Openapi3Parser::Error)
     end
   end
 
-  describe "tags" do
-    subject(:factory) { described_class.new(node_factory_context) }
-
-    let(:input) { minimal_openapi_definition.merge("tags" => tags) }
-    let(:node_factory_context) { create_node_factory_context(input) }
-
-    context "when tags contains no duplicate names" do
-      let(:tags) do
-        [
-          { "name" => "a" }
-        ]
-      end
-
-      it { is_expected.to be_valid }
+  describe "validating tags" do
+    it "is valid when tags contain no duplicates" do
+      factory_context = create_node_factory_context(
+        minimal_openapi_definition.merge(
+          "tags" => [{ "name" => "a" }, { "name" => "b" }]
+        )
+      )
+      expect(described_class.new(factory_context)).to be_valid
     end
 
-    context "when tags contains duplicate names" do
-      let(:tags) do
-        [
-          { "name" => "a" },
-          { "name" => "a" }
-        ]
-      end
+    it "is invalid for an invalid key" do
+      factory_context = create_node_factory_context(
+        minimal_openapi_definition.merge(
+          "tags" => [{ "name" => "a" }, { "name" => "a" }]
+        )
+      )
 
-      it { is_expected.not_to be_valid }
-
-      it "has a duplicate tags names error" do
-        message = "Duplicate tag names: a"
-        expect(factory.errors.first.message).to eq message
-      end
+      instance = described_class.new(factory_context)
+      expect(instance).not_to be_valid
+      expect(instance)
+        .to have_validation_error("#/tags")
+        .with_message("Duplicate tag names: a")
     end
   end
 

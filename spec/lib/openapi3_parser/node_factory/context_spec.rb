@@ -1,12 +1,6 @@
 # frozen_string_literal: true
 
-require "support/helpers/context"
-require "support/helpers/source"
-
 RSpec.describe Openapi3Parser::NodeFactory::Context do
-  include Helpers::Context
-  include Helpers::Source
-
   describe ".root" do
     subject(:context) { described_class.root(input, source) }
 

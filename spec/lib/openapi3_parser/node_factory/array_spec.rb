@@ -1,10 +1,6 @@
 # frozen_string_literal: true
 
-require "support/helpers/context"
-require "support/node_factory"
-
 RSpec.describe Openapi3Parser::NodeFactory::Array do
-  include Helpers::Context
   let(:node_factory_context) { create_node_factory_context(input) }
   let(:input) { [] }
 

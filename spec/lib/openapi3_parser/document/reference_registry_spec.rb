@@ -137,12 +137,6 @@ RSpec.describe Openapi3Parser::Document::ReferenceRegistry do
                                pointer_segments: %w[other_contact])
       end
 
-      let!(:existing_factory) do
-        instance.register(Openapi3Parser::NodeFactory::Contact,
-                          reference_source_location,
-                          reference_factory_context)
-      end
-
       it { is_expected.to be_nil }
     end
   end

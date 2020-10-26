@@ -1,9 +1,6 @@
 # frozen_string_literal: true
 
-require "support/helpers/context"
-
 RSpec.describe Openapi3Parser::NodeFactory::TypeChecker do
-  include Helpers::Context
   let(:node_factory_context) { create_node_factory_context(input) }
   let(:factory) { double("factory", context: node_factory_context) }
 

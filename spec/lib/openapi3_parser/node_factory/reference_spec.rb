@@ -1,10 +1,6 @@
 # frozen_string_literal: true
 
-require "support/helpers/context"
-
 RSpec.describe Openapi3Parser::NodeFactory::Reference do
-  include Helpers::Context
-
   let(:input) { { "$ref" => "#/contact" } }
   let(:node_factory_context) do
     create_node_factory_context(input, document_input: { contact: {} })

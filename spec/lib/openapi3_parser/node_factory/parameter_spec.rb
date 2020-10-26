@@ -1,12 +1,6 @@
 # frozen_string_literal: true
 
-require "support/helpers/context"
-require "support/mutually_exclusive_example"
-require "support/node_object_factory"
-
 RSpec.describe Openapi3Parser::NodeFactory::Parameter do
-  include Helpers::Context
-
   it_behaves_like "node object factory", Openapi3Parser::Node::Parameter do
     let(:input) do
       {
@@ -23,11 +17,6 @@ RSpec.describe Openapi3Parser::NodeFactory::Parameter do
         "style" => "form",
         "explode" => true
       }
-    end
-
-    let(:node_factory_context) { create_node_factory_context(input) }
-    let(:node_context) do
-      node_factory_context_to_node_context(node_factory_context)
     end
   end
 
@@ -248,11 +237,6 @@ RSpec.describe Openapi3Parser::NodeFactory::Parameter do
   end
 
   it_behaves_like "mutually exclusive example" do
-    let(:node_factory_context) do
-      create_node_factory_context({ "name" => "name",
-                                    "in" => "query",
-                                    "example" => example,
-                                    "examples" => examples })
-    end
+    let(:input) { { "name" => "name", "in" => "query" } }
   end
 end
